@@ -31,8 +31,23 @@ const App = () => {
 };
 
 const PaymentGateway = () => {
+  // const handlePayment = (gateway) => {
+  //   window.location.href = `upi://pay?pa=muhammedramees09876-2@oksbi&pn=Merchant&am=500&cu=INR&tn=Payment via ${gateway}`;
+  // };
   const handlePayment = (gateway) => {
-    window.location.href = `upi://pay?pa=muhammedramees09876-2@oksbi&pn=Merchant&am=500&cu=INR&tn=Payment via ${gateway}`;
+    let upiLink =
+      "upi://pay?pa=muhammedramees09876-2@oksbi&pn=Merchant&am=500&cu=INR";
+
+    if (gateway === "GPay") {
+      upiLink += "&mc=GPayCode&mode=00";
+    } else if (gateway === "PhonePe") {
+      upiLink += "&mc=PhonePeCode&mode=02";
+    } else if (gateway === "Paytm") {
+      upiLink += "&mc=PaytmCode&mode=03";
+    }
+
+    // Redirect to the payment link
+    window.location.href = upiLink;
   };
 
   return (
