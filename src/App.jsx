@@ -51,11 +51,11 @@ const PaymentGateway = () => {
 
   const handlePayment = (gateway) => {
     if (gateway === "GPay") {
-      window.location.href = "https://gpay.app.goo.gl/pay?pa=muhammedramees09876-2@oksbi&pn=Merchant&am=1&cu=INR";
+      window.location.href = "https://gpay.app.goo.gl/pay?pa=8075041503@ibl&pn=Merchant&am=1&cu=INR";
     } else if (gateway === "PhonePe") {
-      window.location.href = "https://phon.pe/upi/pay?pa=muhammedramees09876-2@oksbi&pn=Merchant&am=1&cu=INR";
+      window.location.href = "https://phon.pe/upi/pay?pa=8075041503@ibl&pn=Merchant&am=1&cu=INR";
     } else if (gateway === "Paytm") {
-      window.location.href = "paytmmp://pay?pa=muhammedramees09876-2@oksbi&pn=Merchant&am=1&cu=INR";
+      window.location.href = "paytmmp://pay?pa=8075041503@ibl&pn=Merchant&am=1&cu=INR";
     }
   };
   
