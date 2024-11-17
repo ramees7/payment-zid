@@ -1,5 +1,3 @@
-
-
 // import React, { useState } from "react";
 // import QRCode from "react-qr-code"; // Install this package with: npm install qrcode.react
 
@@ -168,9 +166,6 @@
 
 // export default App;
 
-
-
-
 import React, { useState } from "react";
 import QRCode from "react-qr-code"; // Install this package with: npm install qrcode.react
 
@@ -273,9 +268,7 @@ const PaymentGateway = ({
           name
         )}&am=${amount}&cu=INR`;
         break;
-      case "WhatsApp":
-        appLink = window.open(`https://wa.me/?text=Please%20pay%20using%20this%20link:%20${encodeURIComponent(upiLink)}`, "_blank");
-        break;
+
       default:
         return;
     }
@@ -299,12 +292,7 @@ const PaymentGateway = ({
         >
           Paytm
         </button>
-        <button
-          onClick={() => handlePayment("WhatsApp")}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          WhatsApp
-        </button>
+
         <button
           onClick={() => setShowQRCode(!showQRCode)}
           className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mt-2"
