@@ -1,26 +1,91 @@
 import React, { useState } from "react";
-import QRCode from "react-qr-code"; // Install this package with: npm install qrcode.react
+import QRCode from "react-qr-code";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 const App = () => {
   const [showGateway, setShowGateway] = useState(false);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [showQRCode, setShowQRCode] = useState(false); // New state for QR code
-  const [screenshot, setScreenshot] = useState(null); // New state for screenshot upload
-  const amount = 1; // Fixed amount
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [screenshot, setScreenshot] = useState(null);
+  const [formValues, setFormValues] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [submissionStatus, setSubmissionStatus] = useState(null); // For success/error messages
 
-  const handleBuyNow = () => {
-    if (!email || !name || !phone) {
-      alert("Please fill all fields before proceeding.");
-      return;
-    }
+  const amount = 1;
+
+  // Form validation schema with Yup
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    phone: Yup.string()
+      .required("Phone number is required")
+      .length(10, "Phone number must be exactly 10 digits")
+      .matches(/^[0-9]+$/, "Phone number must contain only digits"),
+  });
+
+  const handleBuyNow = (values) => {
+    setFormValues(values); // Save form values to state
     setShowGateway(true);
   };
 
   const handleFileUpload = (e) => {
-    setScreenshot(e.target.files[0]);
-    alert("You will receive your certificate within one working day.");
+    const file = e.target.files[0];
+    if (!file) {
+      alert("Please select a file to upload.");
+      return;
+    }
+    setScreenshot(file); // Set the screenshot in state
+  };
+
+  const handleSubmit = () => {
+    console.log("FormData to be sent:", {
+      name: formValues.name,
+      email: formValues.email,
+      phone: formValues.phone,
+      screenshot: screenshot,
+    });
+    if (!screenshot) {
+      alert("Please upload the screenshot before submitting.");
+      return;
+    }
+
+    // Create a new FormData object to append the screenshot file
+    const formData = new FormData();
+    formData.append("screenshot", screenshot); // Append the screenshot file
+    formData.append("name", formValues.name); // Append form fields
+    formData.append("email", formValues.email);
+    formData.append("phone", formValues.phone);
+
+    // Send the data to the backend
+    axios
+      .post("http://localhost:5000/send-receipt", formData)
+      .then((response) => {
+        if (response.data.success) {
+          setSubmissionStatus(
+            "Your certificate will be processed for issuance within one business day of screenshot verification."
+          );
+          alert(
+            "Your certificate will be processed for issuance within one business day of screenshot verification."
+          );
+          setScreenshot(null); // Clear the screenshot state
+        } else {
+          setSubmissionStatus(
+            "Error: " + (response.data.message || "Unknown error occurred")
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading file:", error);
+        setSubmissionStatus(
+          "An error occurred while uploading the screenshot. Please try again."
+        );
+      });
   };
 
   return (
@@ -33,113 +98,106 @@ const App = () => {
         />
         <div className="text-center mt-4">
           <p className="text-xl font-semibold">Price: ₹{amount}</p>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            className="border rounded w-full p-2 mt-2"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="border rounded w-full p-2 mt-2"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Enter your phone number"
-            className="border rounded w-full p-2 mt-2"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <button
-            onClick={handleBuyNow}
-            className="bg-blue-500 text-white px-4 py-2 mt-4 rounded hover:bg-blue-600"
+          <Formik
+            initialValues={{ name: "", email: "", phone: "" }}
+            validationSchema={validationSchema}
+            onSubmit={handleBuyNow}
           >
-            Buy Now
-          </button>
+            {() => (
+              <Form>
+                <Field
+                  type="text"
+                  name="name"
+                  placeholder="Enter your name"
+                  className="border rounded w-full p-2 mt-2"
+                />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500"
+                />
+
+                <Field
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  className="border rounded w-full p-2 mt-2"
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500"
+                />
+
+                <Field
+                  type="number"
+                  name="phone"
+                  placeholder="Enter your phone number"
+                  className="border rounded w-full p-2 mt-2"
+                />
+                <ErrorMessage
+                  name="phone"
+                  component="div"
+                  className="text-red-500"
+                />
+
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 mt-4 rounded hover:bg-blue-600"
+                >
+                  Buy Now
+                </button>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
       {showGateway && (
         <PaymentGateway
-          name={name}
-          email={email}
-          phone={phone}
           amount={amount}
           showQRCode={showQRCode}
           setShowQRCode={setShowQRCode}
           handleFileUpload={handleFileUpload}
+          handleSubmit={handleSubmit}
+          screenshot={screenshot} // Pass screenshot to PaymentGateway component
         />
+      )}
+
+      {/* Show the status message after form submission */}
+      {submissionStatus && (
+        <div className="mt-4 p-4 bg-green-100 text-green-700 border border-green-200 rounded">
+          {submissionStatus}
+        </div>
       )}
     </div>
   );
 };
 
 const PaymentGateway = ({
-  name,
   amount,
   showQRCode,
   setShowQRCode,
   handleFileUpload,
+  handleSubmit,
 }) => {
-  const upiId = "8075041503@ibl"; // Define UPI ID
+  const upiId = "8075041503@ibl";
 
-  // Updated handlePayment function
   const handlePayment = (gateway) => {
     let appLink;
 
-    // Set app link based on the selected payment gateway
     switch (gateway) {
       case "GPay":
-        appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
-          name
-        )}&am=${amount}&cu=INR`;
+        appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&am=${amount}&cu=INR`;
         break;
-
       case "Paytm":
-        appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(
-          name
-        )}&am=${amount}&cu=INR`;
+        appLink = `paytmmp://pay?pa=${upiId}&am=${amount}&cu=INR`;
         break;
       default:
         return;
     }
 
-    // Redirect to the constructed UPI link
     window.location.href = appLink;
   };
-
-  // const handlePayment = (gateway) => {
-  //   const upiId = "8075041503@ibl";
-  //   const merchantName = "Merchant";
-  //   const amount = 1; // Amount in INR
-
-  //   let appLink = ""; // Initialize a single link variable
-
-  //   switch (gateway) {
-  //     case "GPay":
-  //       appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
-  //         merchantName
-  //       )}&am=${amount}&cu=INR`;
-  //       break;
-  //       // appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
-  //       // break;
-
-  //     case "Paytm":
-  //       appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(
-  //         merchantName
-  //       )}&am=${amount}&cu=INR`;
-  //       break;
-  //     default:
-  //       alert("Unsupported gateway.");
-  //       return;
-  //   }
-
-  //   // Redirect to the constructed UPI link
-  //   window.location.href = appLink;
-  // };
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 mt-4 max-w-sm">
@@ -151,7 +209,6 @@ const PaymentGateway = ({
         >
           Google Pay
         </button>
-
         <button
           onClick={() => handlePayment("Paytm")}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
@@ -167,9 +224,7 @@ const PaymentGateway = ({
         {showQRCode && (
           <div className="mt-4 flex justify-center">
             <QRCode
-              value={`upi://pay?pa=${upiId}&pn=${encodeURIComponent(
-                name
-              )}&am=${amount}&cu=INR`}
+              value={`upi://pay?pa=${upiId}&am=${amount}&cu=INR`}
               size={150}
             />
           </div>
@@ -182,7 +237,14 @@ const PaymentGateway = ({
           accept="image/*"
           onChange={handleFileUpload}
           className="mt-2"
+          key={Date.now()} // Reset the input field after each submission
         />
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-500 text-white px-4 py-2 mt-4 rounded hover:bg-blue-600"
+        >
+          Submit Payment and Screenshot
+        </button>
       </div>
     </div>
   );
