@@ -204,7 +204,7 @@ const App = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const amount = 500; // Fixed amount
+  const amount = 1; // Fixed amount
 
   const handleBuyNow = () => {
     if (!email || !name || !phone) {
@@ -223,7 +223,7 @@ const App = () => {
           className="rounded w-full"
         />
         <div className="text-center mt-4">
-          <p className="text-xl font-semibold">Price: ₹500</p>
+          <p className="text-xl font-semibold">Price: ₹{amount}</p>
           <input
             type="text"
             placeholder="Enter your name"
@@ -263,25 +263,27 @@ const App = () => {
 const PaymentGateway = ({ name, email, phone, amount }) => {
   const handlePayment = (gateway) => {
     const upiId = "8075041503@ibl";
-    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
+    const commonUPILink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
 
     // Define app-specific UPI links
     let appLink;
     switch (gateway) {
       case "GPay":
-        appLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
+        appLink = `intent://${commonUPILink}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;`;
         break;
       case "Paytm":
         appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
         break;
       case "WhatsApp":
-        appLink = `https://wa.me/?text=${encodeURIComponent(`Please pay ₹${amount} to ${upiId} via UPI`)}`;
+        appLink = `https://wa.me/?text=${encodeURIComponent(
+          `Please pay ₹${amount} to ${upiId} via UPI`
+        )}`;
         break;
       default:
-        appLink = upiLink;
+        appLink = commonUPILink;
     }
 
-    // Try navigating to the specific app link
+    // Navigate to the specified payment link
     window.location.href = appLink;
 
     // Simulate backend receipt generation
