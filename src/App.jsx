@@ -204,7 +204,7 @@ const App = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const amount = 1; // Set a fixed amount
+  const amount = 500; // Set a fixed amount
 
   const handleBuyNow = () => {
     if (!email || !name || !phone) {
@@ -263,20 +263,26 @@ const App = () => {
 const PaymentGateway = ({ name, email, phone, amount }) => {
   const handlePayment = (gateway) => {
     const upiId = "8075041503@ibl";
-    const upiLinkBase = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&mc=0000&tid=123456789&tr=TXN1234&tn=Purchase&am=${amount}&cu=INR`;
+    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
 
-    // Customize UPI link based on gateway
-    let upiLink;
-    if (gateway === "GPay") {
-      upiLink = upiLinkBase; // Google Pay should handle this link directly
-    } else if (gateway === "Paytm") {
-      upiLink = upiLinkBase + "&url=https://paytm.com"; // Some UPI apps recognize this URL
-    } else if (gateway === "WhatsApp") {
-      upiLink = upiLinkBase + "&url=https://wa.me/"; // For WhatsApp payments
+    // Define app-specific UPI links
+    let appLink;
+    switch (gateway) {
+      case "GPay":
+        appLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR#Intent;package=com.google.android.apps.nbu.paisa.user;scheme=upi;end`;
+        break;
+      case "Paytm":
+        appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
+        break;
+      case "WhatsApp":
+        appLink = `https://wa.me/?text=${encodeURIComponent(`Please pay ₹${amount} to ${upiId} via UPI`)}`;
+        break;
+      default:
+        appLink = upiLink;
     }
 
-    // Redirect to the UPI link
-    window.location.href = upiLink;
+    // Try navigating to the specific app link
+    window.location.href = appLink;
 
     // Simulate backend receipt generation
     setTimeout(async () => {
