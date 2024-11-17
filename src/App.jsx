@@ -263,27 +263,30 @@ const App = () => {
 const PaymentGateway = ({ name, email, phone, amount }) => {
   const handlePayment = (gateway) => {
     const upiId = "8075041503@ibl";
-    const commonUPILink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
+    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
 
     // Define app-specific UPI links
     let appLink;
     switch (gateway) {
       case "GPay":
-        appLink = `intent://${commonUPILink}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;`;
+        // Google Pay intent for Android with specific package
+        appLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;`;
         break;
       case "Paytm":
+        // Paytm UPI link for direct payment
         appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
         break;
       case "WhatsApp":
+        // WhatsApp link with prefilled message
         appLink = `https://wa.me/?text=${encodeURIComponent(
-          `Please pay ₹${amount} to ${upiId} via UPI`
+          `Please complete a payment of ₹${amount} to the UPI ID ${upiId}.`
         )}`;
         break;
       default:
-        appLink = commonUPILink;
+        appLink = upiLink;
     }
 
-    // Navigate to the specified payment link
+    // Navigate to the app-specific payment link
     window.location.href = appLink;
 
     // Simulate backend receipt generation
