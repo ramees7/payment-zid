@@ -120,16 +120,13 @@ const PaymentGateway = ({
 
     switch (gateway) {
       case "GPay":
-        // appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
-        //   merchantName
-        // )}&am=${amount}&cu=INR`;
-        // break;
+        appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
+          merchantName
+        )}&am=${amount}&cu=INR`;
+        break;
         // appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
         // break;
-        appLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(
-          name
-        )}&am=${amount}&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;`;
-        break;
+
       case "Paytm":
         appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(
           merchantName
