@@ -3,6 +3,7 @@ import QRCode from "react-qr-code";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import certificate from "./assets/certificate.jpg";
 
 const App = () => {
   const [showGateway, setShowGateway] = useState(false);
@@ -64,7 +65,10 @@ const App = () => {
 
     // Send the data to the backend
     axios
-      .post("http://localhost:5000/send-receipt", formData)
+      .post(
+        "https://payment-backend-certificate.onrender.com/send-receipt",
+        formData
+      )
       .then((response) => {
         if (response.data.success) {
           setSubmissionStatus(
@@ -91,11 +95,7 @@ const App = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-sm">
-        <img
-          src="https://digitaldeepak.com/content/images/wp-content/uploads/2017/12/cert.png"
-          alt="Product"
-          className="rounded w-full"
-        />
+        <img src={certificate} alt="Product" className="rounded w-full" />
         <div className="text-center mt-4">
           <p className="text-xl font-semibold">Price: ₹{amount}</p>
           <Formik
