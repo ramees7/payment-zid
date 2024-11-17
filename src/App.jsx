@@ -204,7 +204,7 @@ const App = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const amount = 500; // Set a fixed amount
+  const amount = 500; // Fixed amount
 
   const handleBuyNow = () => {
     if (!email || !name || !phone) {
@@ -269,7 +269,7 @@ const PaymentGateway = ({ name, email, phone, amount }) => {
     let appLink;
     switch (gateway) {
       case "GPay":
-        appLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR#Intent;package=com.google.android.apps.nbu.paisa.user;scheme=upi;end`;
+        appLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
         break;
       case "Paytm":
         appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
