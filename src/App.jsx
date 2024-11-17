@@ -4,6 +4,8 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import certificate from "./assets/certificate.jpg";
+import { FaGooglePay, FaQrcode } from "react-icons/fa";
+import { SiPaytm } from "react-icons/si";
 
 const App = () => {
   const [showGateway, setShowGateway] = useState(false);
@@ -16,7 +18,7 @@ const App = () => {
   });
   const [submissionStatus, setSubmissionStatus] = useState(null); // For success/error messages
 
-  const amount = 1;
+  const amount = 999;
 
   // Form validation schema with Yup
   const validationSchema = Yup.object({
@@ -200,37 +202,40 @@ const PaymentGateway = ({
   };
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 mt-4 max-w-sm">
-      <h2 className="text-lg font-semibold mb-4">Select Payment Gateway</h2>
-      <div className="flex flex-col gap-2">
-        <button
-          onClick={() => handlePayment("GPay")}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          Google Pay
-        </button>
-        <button
-          onClick={() => handlePayment("Paytm")}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Paytm
-        </button>
-        <button
-          onClick={() => setShowQRCode(!showQRCode)}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mt-2"
-        >
-          {showQRCode ? "Hide QR Code" : "Show QR Code"}
-        </button>
-        {showQRCode && (
-          <div className="mt-4 flex justify-center">
-            <QRCode
-              value={`upi://pay?pa=${upiId}&am=${amount}&cu=INR`}
-              size={150}
-            />
-          </div>
-        )}
+    <>
+      <div className="bg-white shadow-lg rounded-lg p-6 mt-4 max-w-sm w-[384px]">
+        <h2 className="text-lg font-semibold mb-4">Select Payment Gateway</h2>
+        <div className="flex flex-col gap-2 w-[100%]">
+          <button
+            onClick={() => handlePayment("GPay")}
+            className="bg-green-500 text-white px-4  rounded hover:bg-green-600 flex items-center justify-center"
+          >
+            <FaGooglePay className="mr-2 text-6xl" />
+          </button>
+          <button
+            onClick={() => handlePayment("Paytm")}
+            className="bg-red-500 text-white px-4  rounded hover:bg-red-600 flex items-center justify-center"
+          >
+            <SiPaytm className="mr-2 text-6xl" />
+          </button>
+          <button
+            onClick={() => setShowQRCode(!showQRCode)}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mt-2 flex items-center justify-center"
+          >
+            <FaQrcode className="mr-2 text-4xl" />
+            {showQRCode ? "Hide QR Code" : "Show QR Code"}
+          </button>
+          {showQRCode && (
+            <div className="mt-4 flex justify-center">
+              <QRCode
+                value={`upi://pay?pa=${upiId}&am=${amount}&cu=INR`}
+                size={150}
+              />
+            </div>
+          )}
+        </div>
       </div>
-      <div className="mt-4">
+      <div className=" bg-white shadow-lg rounded-lg p-6 mt-4 max-w-sm">
         <h3 className="text-lg font-semibold">Upload Payment Screenshot</h3>
         <input
           type="file"
@@ -246,7 +251,7 @@ const PaymentGateway = ({
           Submit Payment and Screenshot
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
