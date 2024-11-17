@@ -120,9 +120,11 @@ const PaymentGateway = ({
 
     switch (gateway) {
       case "GPay":
-        appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
-          merchantName
-        )}&am=${amount}&cu=INR`;
+        // appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
+        //   merchantName
+        // )}&am=${amount}&cu=INR`;
+        // break;
+        appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
         break;
 
       case "Paytm":
