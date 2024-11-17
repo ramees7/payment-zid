@@ -87,23 +87,51 @@ const PaymentGateway = ({
   const upiId = "8075041503@ibl"; // Define UPI ID
 
   // Updated handlePayment function
-  const handlePayment = (gateway) => {
-    let appLink;
+  // const handlePayment = (gateway) => {
+  //   let appLink;
 
-    // Set app link based on the selected payment gateway
+  //   // Set app link based on the selected payment gateway
+  //   switch (gateway) {
+  //     case "GPay":
+  //       appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
+  //         name
+  //       )}&am=${amount}&cu=INR`;
+  //       break;
+
+  //     case "Paytm":
+  //       appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(
+  //         name
+  //       )}&am=${amount}&cu=INR`;
+  //       break;
+  //     default:
+  //       return;
+  //   }
+
+  //   // Redirect to the constructed UPI link
+  //   window.location.href = appLink;
+  // };
+
+  const handlePayment = (gateway) => {
+    const upiId = "8075041503@ibl";
+    const merchantName = "Merchant";
+    const amount = 1; // Amount in INR
+
+    let appLink = ""; // Initialize a single link variable
+
     switch (gateway) {
       case "GPay":
         appLink = `https://gpay.app.goo.gl/pay?pa=${upiId}&pn=${encodeURIComponent(
-          name
+          merchantName
         )}&am=${amount}&cu=INR`;
         break;
 
       case "Paytm":
         appLink = `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(
-          name
+          merchantName
         )}&am=${amount}&cu=INR`;
         break;
       default:
+        alert("Unsupported gateway.");
         return;
     }
 
