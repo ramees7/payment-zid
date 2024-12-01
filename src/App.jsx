@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import QRCode from "react-qr-code";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -6,6 +6,7 @@ import axios from "axios";
 import certificate from "./assets/certificate.jpg";
 import { FaGooglePay, FaQrcode } from "react-icons/fa";
 import { SiPaytm } from "react-icons/si";
+import PropTypes from "prop-types"; // Import PropTypes
 
 const App = () => {
   const [showGateway, setShowGateway] = useState(false);
@@ -109,7 +110,7 @@ const App = () => {
               <Form>
                 <Field
                   type="text"
-                  name="name"
+              name="name"
                   placeholder="Enter your name"
                   className="border rounded w-full p-2 mt-2"
                 />
@@ -182,7 +183,8 @@ const PaymentGateway = ({
   handleFileUpload,
   handleSubmit,
 }) => {
-  const upiId = "8075041503@ibl";
+  const upiId = "muhammedramees09876-2@oksbi";
+  // const upiId = "8075041503@ibl";
 
   const handlePayment = (gateway) => {
     let appLink;
@@ -255,4 +257,13 @@ const PaymentGateway = ({
   );
 };
 
+
 export default App;
+
+PaymentGateway.propTypes = {
+  amount: PropTypes.number.isRequired,
+  showQRCode: PropTypes.bool.isRequired,
+  setShowQRCode: PropTypes.func.isRequired,
+  handleFileUpload: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+};
